@@ -1,0 +1,28 @@
+<div class="section-label">Overall</div>
+<h2 class="section-title">Overall framework</h2>
+<p class="lead">
+  Use this section for the high-level story of the project. This is usually the best place to explain the problem setting, why unintended changes matter in image-to-image transition, and how StableI2I provides a more reliable way to identify them.
+</p>
+
+<div class="pipeline">
+  <div>
+    <div class="stage-num">01</div>
+    <div class="stage-name">Input Pair</div>
+    <div class="stage-desc">A source image and its transformed image are given as input.</div>
+  </div>
+  <div>
+    <div class="stage-num">02</div>
+    <div class="stage-name">Target Change</div>
+    <div class="stage-desc">The intended transition is separated from the rest of the image content.</div>
+  </div>
+  <div>
+    <div class="stage-num">03</div>
+    <div class="stage-name">Unintended Drift</div>
+    <div class="stage-desc">Non-target changes are identified across structure and appearance.</div>
+  </div>
+  <div>
+    <div class="stage-num">04</div>
+    <div class="stage-name">StableI2I Score</div>
+    <div class="stage-desc">A fidelity-oriented score highlights whether the transition is stable.</div>
+  </div>
+</div>
