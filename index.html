@@ -76,7 +76,8 @@
     }
 
     .hero-copy {
-      width: min(1000px, 72vw);
+      width: auto;
+      max-width: none;
     }
 
     .title {
@@ -86,22 +87,23 @@
       letter-spacing: -0.09em;
       font-weight: 800;
       text-align: left;
-      max-width: 980px;
+      max-width: none;
     }
 
     .subtitle {
       margin: 34px 0 0;
-      max-width: 1120px;
+      max-width: none;
       color: var(--muted);
       font-size: clamp(1.9rem, 2.35vw, 2.8rem);
       line-height: 1.34;
       text-align: left;
       font-weight: 520;
+      white-space: nowrap;
     }
 
     .authors {
       margin-top: 42px;
-      max-width: 1120px;
+      max-width: none;
       color: rgba(255,255,255,0.98);
       font-size: clamp(1.14rem, 1.25vw, 1.38rem);
       line-height: 1.92;
@@ -290,6 +292,18 @@
         width: 100%;
         max-width: 100%;
       }
+
+      .subtitle {
+        white-space: normal;
+      }
+    }
+
+      .hero-copy,
+      .title,
+      .subtitle {
+        width: 100%;
+        max-width: 100%;
+      }
     }
 
     @media (max-width: 980px) {
@@ -373,7 +387,7 @@
             <a class="btn" href="#">Code</a>
             <a class="btn" href="#">Demo</a>
             <a class="btn" href="#">PIP</a>
-            <a class="btn" href="#">HF</a>
+            <a class="btn" href="#">HuggingFace</a>
           </div>
 
           <div class="scroll-note">Scroll to continue</div>
