@@ -12,6 +12,8 @@
       --maxw: 1440px;
       --hero-left: 20vw;
       --hero-right: 6vw;
+      --content-left: clamp(22px, 8vw, 120px);
+      --content-right: clamp(22px, 5vw, 72px);
     }
 
     * {
@@ -54,8 +56,6 @@
     .wrap {
       width: min(100%, var(--maxw));
       margin: 0 auto;
-      padding-left: clamp(22px, 4vw, 56px);
-      padding-right: clamp(22px, 4vw, 56px);
       position: relative;
       z-index: 1;
     }
@@ -160,12 +160,14 @@
     }
 
     .content {
-      padding-top: 18px;
+      padding-left: var(--content-left);
+      padding-right: var(--content-right);
+      padding-top: 24px;
       padding-bottom: 84px;
     }
 
-    section {
-      padding: 54px 0;
+    .section-shell {
+      padding: 56px 0;
     }
 
     .section-label {
@@ -178,17 +180,17 @@
 
     .section-title {
       margin: 0 0 18px;
-      font-size: clamp(1.9rem, 4vw, 3.2rem);
+      font-size: clamp(2rem, 4vw, 3.4rem);
       line-height: 1.05;
       letter-spacing: -0.04em;
       text-align: left;
     }
 
     .lead {
-      max-width: 940px;
+      max-width: 1040px;
       color: var(--muted);
       line-height: 1.95;
-      font-size: 1rem;
+      font-size: 1.02rem;
       margin: 0;
       text-align: left;
     }
@@ -224,7 +226,7 @@
       grid-template-columns: 1.08fr 0.92fr;
       gap: 44px;
       align-items: start;
-      margin-top: 14px;
+      margin-top: 18px;
     }
 
     .figure {
@@ -259,6 +261,18 @@
       color: var(--muted);
       line-height: 1.8;
       font-size: 0.97rem;
+    }
+
+    .placeholder {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.98rem;
+      line-height: 1.8;
+    }
+
+    .load-fallback {
+      color: rgba(255,255,255,0.42);
+      font-size: 0.96rem;
+      padding-top: 6px;
     }
 
     pre {
@@ -296,13 +310,10 @@
       .subtitle {
         white-space: normal;
       }
-    }
 
-      .hero-copy,
-      .title,
-      .subtitle {
-        width: 100%;
-        max-width: 100%;
+      .content {
+        padding-left: clamp(24px, 6vw, 60px);
+        padding-right: clamp(24px, 4vw, 40px);
       }
     }
 
@@ -324,6 +335,11 @@
         width: 100%;
       }
 
+      .content {
+        padding-left: 28px;
+        padding-right: 28px;
+      }
+
       .figure {
         min-height: 240px;
       }
@@ -335,6 +351,11 @@
         padding-right: 22px;
         padding-top: 14vh;
         padding-bottom: 12vh;
+      }
+
+      .content {
+        padding-left: 22px;
+        padding-right: 22px;
       }
 
       .title {
@@ -382,7 +403,10 @@
           </div>
 
           <div class="actions">
-            <a class="btn" href="#overview">Overview</a>
+            <a class="btn" href="#overall">Overall</a>
+            <a class="btn" href="#demo">Demo</a>
+            <a class="btn" href="#method">Method</a>
+            <a class="btn" href="#result">Result</a>
             <a class="btn" href="#">Paper</a>
             <a class="btn" href="#">Code</a>
             <a class="btn" href="#">Demo</a>
@@ -396,90 +420,20 @@
     </section>
 
     <div class="content wrap">
-      <section id="overview">
-        <div class="section-label">Overview</div>
-        <h2 class="section-title">What this project is about</h2>
-        <p class="lead">
-          Replace this paragraph with your actual abstract or project summary. This layout is intentionally minimalist: no section boxes, no borders, and no centered text blocks. Everything flows naturally downward after the first screen, which makes it feel closer to a modern project landing page.
-        </p>
+      <section id="demo" class="section-shell" data-include="sections/demo.html">
+        <div class="load-fallback">Loading demo section...</div>
       </section>
 
-      <section id="method">
-        <div class="section-label">Method</div>
-        <h2 class="section-title">Pipeline and design</h2>
-        <p class="lead">
-          You can put a concise explanation here, followed by your pipeline stages. Since this version keeps the page borderless, the structure is presented as clean text columns instead of boxed cards.
-        </p>
-
-        <div class="pipeline">
-          <div>
-            <div class="stage-num">01</div>
-            <div class="stage-name">Input Pair</div>
-            <div class="stage-desc">Edited or restored image pair used for fidelity evaluation.</div>
-          </div>
-          <div>
-            <div class="stage-num">02</div>
-            <div class="stage-name">Semantic Fidelity</div>
-            <div class="stage-desc">Measure whether the intended edit content is correctly preserved or changed.</div>
-          </div>
-          <div>
-            <div class="stage-num">03</div>
-            <div class="stage-name">Structure Fidelity</div>
-            <div class="stage-desc">Capture alignment quality, geometric consistency, and non-target drift.</div>
-          </div>
-          <div>
-            <div class="stage-num">04</div>
-            <div class="stage-name">Appearance Fidelity</div>
-            <div class="stage-desc">Assess texture, blur, noise, and other low-level visual details.</div>
-          </div>
-        </div>
+      <section id="overall" class="section-shell" data-include="sections/overall.html">
+        <div class="load-fallback">Loading overall section...</div>
       </section>
 
-      <section id="figure">
-        <div class="section-label">Figure</div>
-        <h2 class="section-title">Method figure</h2>
-        <div class="grid-2">
-          <p class="lead">
-            Put your method figure on the right, or replace this whole two-column layout with a single large full-width image. For GitHub Pages, the most common choice is to save the image in <code>assets/</code> and then reference it with an <code>img</code> tag.
-          </p>
-          <div class="figure">
-            Replace this with your actual image, for example: &lt;img src="assets/method.png" alt="method figure" style="width:100%; height:auto; display:block;" /&gt;
-          </div>
-        </div>
+      <section id="method" class="section-shell" data-include="sections/method.html">
+        <div class="load-fallback">Loading method section...</div>
       </section>
 
-      <section id="results">
-        <div class="section-label">Results</div>
-        <h2 class="section-title">Key numbers</h2>
-        <p class="lead">
-          Here you can highlight only the most important results first, then place a larger table or benchmark figure underneath if needed.
-        </p>
-
-        <div class="metrics">
-          <div>
-            <div class="metric-value">75.9%</div>
-            <div class="metric-label">Human preference agreement on a filtered pairwise fidelity study.</div>
-          </div>
-          <div>
-            <div class="metric-value">3</div>
-            <div class="metric-label">Fidelity dimensions spanning semantic, structural, and low-level appearance quality.</div>
-          </div>
-          <div>
-            <div class="metric-value">+XX.X</div>
-            <div class="metric-label">Placeholder for your strongest relative improvement over prior baselines.</div>
-          </div>
-        </div>
-      </section>
-
-      <section id="citation">
-        <div class="section-label">Citation</div>
-        <h2 class="section-title">BibTeX</h2>
-        <pre>@inproceedings{stablei2i2026,
-  title     = {StableI2I: Your Paper Title Here},
-  author    = {Jiayang Li and Shuo Cao and Xiaohui Li and Zhizhen Zhang and Kaiwen Zhu and Yule Duan and Yu Qiao and Jian Zhang and Yihao Liu},
-  booktitle = {Conference Name},
-  year      = {2026}
-}</pre>
+      <section id="result" class="section-shell" data-include="sections/result.html">
+        <div class="load-fallback">Loading result section...</div>
       </section>
 
       <footer>
@@ -487,5 +441,24 @@
       </footer>
     </div>
   </main>
+
+  <script>
+    async function loadSections() {
+      const sections = document.querySelectorAll('[data-include]');
+      for (const section of sections) {
+        const path = section.getAttribute('data-include');
+        try {
+          const response = await fetch(path);
+          if (!response.ok) throw new Error('Failed to load ' + path);
+          section.innerHTML = await response.text();
+        } catch (error) {
+          section.innerHTML = `<div class="load-fallback">Could not load <code>${path}</code>. Make sure the file exists in the correct folder.</div>`;
+          console.error(error);
+        }
+      }
+    }
+
+    loadSections();
+  </script>
 </body>
 </html>
