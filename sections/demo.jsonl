@@ -1,0 +1,23 @@
+{
+  "case_id": "case_001",
+  "input": "demo_assets/case_001_input.png",
+  "prompt": "your prompt here",
+
+  "output1": "demo_assets/case_001_output_1.png",
+  "model1": "Model name 1",
+  "score1": "84.7",
+  "semantic1": "...",
+  "structure1": "...",
+  "appearance1": "...",
+  "semantic_cot1": "...",
+  "appearance_cot1": "...",
+
+  "output2": "demo_assets/case_001_output_2.png",
+  "model2": "Model name 2",
+  "score2": "61.3",
+  "semantic2": "...",
+  "structure2": "...",
+  "appearance2": "...",
+  "semantic_cot2": "...",
+  "appearance_cot2": "..."
+}
