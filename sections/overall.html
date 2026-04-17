@@ -1,28 +1,57 @@
 <div class="section-label">Overall</div>
-<h2 class="section-title">Overall framework</h2>
+<h2 class="section-title">A unified framework for evaluating I2I fidelity and consistency</h2>
+
 <p class="lead">
-  Use this section for the high-level story of the project. This is usually the best place to explain the problem setting, why unintended changes matter in image-to-image transition, and how StableI2I provides a more reliable way to identify them.
+  Existing evaluations for image-to-image generation mainly emphasize instruction following and the perceptual quality or aesthetics of the generated results. However, in many real-world I2I scenarios, they fail to assess whether the output image preserves the semantic correspondence and spatial structure of the input image. StableI2I is proposed to address this gap with a unified and dynamic evaluation framework that explicitly measures content fidelity and pre–post consistency without requiring reference images.
 </p>
+
+<div class="grid-2">
+  <div>
+    <p class="lead">
+      StableI2I is designed for a wide range of I2I tasks, including image editing and image restoration. Instead of focusing only on whether an output looks good, it evaluates whether the intended transformation is achieved while the non-target content remains stable. This makes the framework particularly practical for diagnosing unintended changes in real-world systems.
+    </p>
+
+    <p class="lead" style="margin-top: 20px;">
+      To support systematic evaluation, we further build <strong>StableI2I-Bench</strong>, a benchmark for testing whether MLLMs can accurately assess fidelity and consistency in I2I outputs. Extensive experiments show that StableI2I provides accurate, fine-grained, and interpretable evaluations, and correlates strongly with human subjective judgments.
+    </p>
+  </div>
+
+  <div class="figure">
+    Replace this block with your overall framework figure, for example:
+    &lt;img src="assets/overall.png" alt="overall framework" style="width:100%; height:auto; display:block;" /&gt;
+  </div>
+</div>
 
 <div class="pipeline">
   <div>
     <div class="stage-num">01</div>
-    <div class="stage-name">Input Pair</div>
-    <div class="stage-desc">A source image and its transformed image are given as input.</div>
+    <div class="stage-name">Problem</div>
+    <div class="stage-desc">
+      Existing I2I evaluations overlook whether outputs preserve semantic correspondence and spatial consistency with the input.
+    </div>
   </div>
+
   <div>
     <div class="stage-num">02</div>
-    <div class="stage-name">Target Change</div>
-    <div class="stage-desc">The intended transition is separated from the rest of the image content.</div>
+    <div class="stage-name">Framework</div>
+    <div class="stage-desc">
+      StableI2I measures content fidelity and pre–post consistency across diverse I2I tasks without reference images.
+    </div>
   </div>
+
   <div>
     <div class="stage-num">03</div>
-    <div class="stage-name">Unintended Drift</div>
-    <div class="stage-desc">Non-target changes are identified across structure and appearance.</div>
+    <div class="stage-name">Benchmark</div>
+    <div class="stage-desc">
+      StableI2I-Bench systematically evaluates whether MLLMs can accurately assess fidelity and consistency.
+    </div>
   </div>
+
   <div>
     <div class="stage-num">04</div>
-    <div class="stage-name">StableI2I Score</div>
-    <div class="stage-desc">A fidelity-oriented score highlights whether the transition is stable.</div>
+    <div class="stage-name">Outcome</div>
+    <div class="stage-desc">
+      The framework delivers accurate, interpretable, and human-aligned evaluation for real-world I2I systems.
+    </div>
   </div>
 </div>
