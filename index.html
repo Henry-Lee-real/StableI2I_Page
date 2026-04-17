@@ -416,20 +416,46 @@
   <script>
     async function loadSections() {
       const sections = document.querySelectorAll('[data-include]');
+  
       for (const section of sections) {
         const path = section.getAttribute('data-include');
+  
         try {
           const response = await fetch(path);
-          if (!response.ok) throw new Error('Failed to load ' + path);
-          section.innerHTML = await response.text();
+          if (!response.ok) {
+            throw new Error('Failed to load ' + path);
+          }
+  
+          const html = await response.text();
+          section.innerHTML = html;
+  
+          const scripts = section.querySelectorAll('script');
+          scripts.forEach((oldScript) => {
+            const newScript = document.createElement('script');
+  
+            for (const attr of oldScript.attributes) {
+              newScript.setAttribute(attr.name, attr.value);
+            }
+  
+            newScript.textContent = oldScript.textContent;
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+          });
         } catch (error) {
-          section.innerHTML = `<div class="load-fallback">Could not load <code>${path}</code>. Make sure the file exists in the correct folder.</div>`;
+          section.innerHTML = `
+            <div class="load-fallback">
+              Could not load <code>${path}</code>. Make sure the file exists in the correct folder.
+            </div>
+          `;
           console.error(error);
         }
       }
     }
-
-    loadSections();
+  
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadSections);
+    } else {
+      loadSections();
+    }
   </script>
 </body>
 </html>
