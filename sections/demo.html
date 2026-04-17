@@ -1,25 +1,460 @@
-<div class="section-label">Demo</div>
-<h2 class="section-title">Interactive demo</h2>
-<p class="lead">
-  Replace this section with your qualitative demos, interactive examples, or video previews. You can place a single large teaser video here, or use a row of demos comparing the source image, edited output, and the unintended changes spotted by StableI2I.
-</p>
+<style>
+  .demo-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-<div class="grid-2">
-  <div>
-    <p class="lead">
-      Suggested content for this section:
-      <br><br>
-      • Demo teaser video or GIF
-      <br>
-      • Before / after image comparisons
-      <br>
-      • A short explanation of what your method detects
-      <br>
-      • Links to online demo or Colab if available
-    </p>
+  .demo-intro {
+    max-width: 980px;
+  }
+
+  .demo-loading,
+  .demo-error {
+    color: rgba(255,255,255,0.56);
+    font-size: 0.98rem;
+    line-height: 1.8;
+    padding: 14px 0;
+  }
+
+  .demo-carousel {
+    position: relative;
+    overflow: hidden;
+    min-height: 700px;
+  }
+
+  .demo-stage {
+    position: relative;
+    min-height: 700px;
+  }
+
+  .demo-case {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(18px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+
+  .demo-case.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .demo-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.9fr) 76px minmax(520px, 1.25fr);
+    gap: 26px;
+    align-items: center;
+  }
+
+  .demo-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: rgba(255,255,255,0.75);
+    user-select: none;
+  }
+
+  .demo-input-col,
+  .demo-output-col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .demo-input-card,
+  .demo-output-card,
+  .demo-prompt,
+  .demo-meta {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+  }
+
+  .demo-input-card,
+  .demo-output-card {
+    padding: 18px;
+  }
+
+  .demo-prompt,
+  .demo-meta {
+    padding: 16px 18px;
+  }
+
+  .demo-image {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 30% 22%, rgba(177,119,255,0.16), transparent 24%),
+      radial-gradient(circle at 78% 74%, rgba(123,92,255,0.12), transparent 18%),
+      rgba(255,255,255,0.035);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 18px;
+    color: rgba(255,255,255,0.82);
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .demo-image.real {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .demo-image.real img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .demo-prompt-title,
+  .demo-meta-title {
+    font-size: 0.84rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.48);
+    margin-bottom: 10px;
+  }
+
+  .demo-prompt-text,
+  .demo-model-name,
+  .demo-detail-grid {
+    color: rgba(255,255,255,0.9);
+  }
+
+  .demo-prompt-text {
+    line-height: 1.8;
+    color: rgba(255,255,255,0.78);
+  }
+
+  .demo-output-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .demo-model-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .demo-score-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+    border: 0;
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 0.96rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .demo-score-toggle:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  .demo-score-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.28s ease, margin-top 0.28s ease;
+    margin-top: 0;
+  }
+
+  .demo-score-panel.open {
+    grid-template-rows: 1fr;
+    margin-top: 12px;
+  }
+
+  .demo-score-panel > div {
+    overflow: hidden;
+  }
+
+  .demo-detail-grid {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.74);
+    line-height: 1.7;
+    font-size: 0.93rem;
+  }
+
+  .demo-detail-grid strong {
+    color: rgba(255,255,255,0.94);
+    font-weight: 700;
+  }
+
+  .demo-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 22px;
+  }
+
+  .demo-nav {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .demo-dot,
+  .demo-arrow-btn {
+    border: 0;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .demo-arrow-btn {
+    border-radius: 999px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .demo-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    padding: 0;
+    opacity: 0.45;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .demo-dot.active {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+
+  .demo-hint {
+    color: rgba(255,255,255,0.52);
+    font-size: 0.92rem;
+  }
+
+  @media (max-width: 1180px) {
+    .demo-layout {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .demo-arrow {
+      transform: rotate(90deg);
+      font-size: 2.6rem;
+    }
+  }
+
+  @media (max-width: 820px) {
+    .demo-output-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .demo-carousel,
+    .demo-stage {
+      min-height: 1320px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .demo-carousel,
+    .demo-stage {
+      min-height: 1260px;
+    }
+  }
+</style>
+
+<div class='demo-wrap' id='stablei2i-demo-root'>
+  <div class='section-label'>Demo</div>
+  <h2 class='section-title'>Interactive comparison demo</h2>
+  <p class='lead demo-intro'>
+    Cases are loaded from a JSONL file placed next to this file. Only one case is shown at a time. The carousel can auto-play, and users can also switch manually. Clicking a score expands more detailed analysis.
+  </p>
+
+  <div class='demo-carousel'>
+    <div class='demo-stage' id='stablei2i-demo-stage'>
+      <div class='demo-loading'>Loading demo cases from <code>sections/demo.jsonl</code>...</div>
+    </div>
   </div>
-  <div class="figure">
-    Replace this block with your demo media, for example:
-    &lt;video src="assets/demo.mp4" controls autoplay muted loop style="width:100%; height:auto; display:block;"&gt;&lt;/video&gt;
+
+  <div class='demo-controls'>
+    <div style='display:flex; gap:10px;'>
+      <button class='demo-arrow-btn demo-prev' type='button'>←</button>
+      <button class='demo-arrow-btn demo-next' type='button'>→</button>
+    </div>
+
+    <div class='demo-nav' id='stablei2i-demo-nav'></div>
+
+    <div class='demo-hint'>Auto-play on · hover to pause</div>
   </div>
 </div>
+
+<img
+  alt=''
+  src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
+  style='display:none'
+  onload="(function(){
+    if(window.StableI2IDemoJSONLInitialized){return;}
+    window.StableI2IDemoJSONLInitialized=true;
+    const app={
+      base:'sections/',
+      dataFile:'sections/demo.jsonl',
+      root:null,
+      stage:null,
+      nav:null,
+      prevBtn:null,
+      nextBtn:null,
+      timer:null,
+      index:0,
+      cases:[],
+      autoMs:4500,
+      init:function(){
+        this.root=document.getElementById('stablei2i-demo-root');
+        if(!this.root){return;}
+        this.stage=document.getElementById('stablei2i-demo-stage');
+        this.nav=document.getElementById('stablei2i-demo-nav');
+        this.prevBtn=this.root.querySelector('.demo-prev');
+        this.nextBtn=this.root.querySelector('.demo-next');
+        this.bindBaseEvents();
+        this.load();
+      },
+      bindBaseEvents:function(){
+        const self=this;
+        this.prevBtn.addEventListener('click',function(){self.prev();});
+        this.nextBtn.addEventListener('click',function(){self.next();});
+        this.root.addEventListener('mouseenter',function(){self.stop();});
+        this.root.addEventListener('mouseleave',function(){self.start();});
+        this.root.addEventListener('click',function(e){
+          const dot=e.target.closest('.demo-dot');
+          if(dot){self.set(Number(dot.dataset.index||0));return;}
+          const btn=e.target.closest('.demo-score-toggle');
+          if(btn){
+            const panel=btn.nextElementSibling;
+            const icon=btn.querySelector('.demo-score-icon');
+            const open=panel.classList.contains('open');
+            panel.classList.toggle('open',!open);
+            if(icon){icon.textContent=!open?'−':'+';}
+          }
+        });
+      },
+      resolve:function(path){
+        if(!path){return '';}
+        if(/^(https?:|data:|\/)/.test(path)){return path;}
+        return this.base+String(path).replace(/^\.?\//,'');
+      },
+      parseJsonl:function(text){
+        return text.split(/\r?\n/).map(function(line){return line.trim();}).filter(Boolean).map(function(line){return JSON.parse(line);});
+      },
+      load:function(){
+        const self=this;
+        fetch(this.dataFile).then(function(res){
+          if(!res.ok){throw new Error('Failed to load '+self.dataFile);}
+          return res.text();
+        }).then(function(text){
+          self.cases=self.parseJsonl(text);
+          if(!self.cases.length){throw new Error('No demo cases found in JSONL.');}
+          self.render();
+          self.set(0);
+          self.start();
+        }).catch(function(err){
+          self.stage.innerHTML='<div class=\'demo-error\'>Could not load <code>'+self.dataFile+'</code>. Please make sure the file exists and each line is valid JSON.</div>';
+          self.nav.innerHTML='';
+          console.error(err);
+        });
+      },
+      renderImage:function(path,label){
+        if(path){
+          return '<div class=\'demo-image real\'><img src=\''+this.resolve(path)+'\' alt=\''+(label||'demo image')+'\'></div>';
+        }
+        return '<div class=\'demo-image\'>'+(label||'Image')+'</div>';
+      },
+      renderDetail:function(prefix,item){
+        return '<div class=\'demo-detail-grid\'>'+
+          '<div><strong>Semantic Level:</strong> '+(item['semantic'+prefix]||'')+'</div>'+
+          '<div><strong>Structure Level:</strong> '+(item['structure'+prefix]||'')+'</div>'+
+          '<div><strong>Low-level Appearance:</strong> '+(item['appearance'+prefix]||'')+'</div>'+
+          '<div><strong>Semantic Level COT:</strong> '+(item['semantic_cot'+prefix]||'')+'</div>'+
+          '<div><strong>Low-level Appearance COT:</strong> '+(item['appearance_cot'+prefix]||'')+'</div>'+
+        '</div>';
+      },
+      renderOutput:function(prefix,item){
+        const idx=prefix.replace(/[^0-9]/g,'');
+        const model=item['model'+idx]||('Model '+idx);
+        const score=item['score'+idx]||'--';
+        const image=item['output'+idx]||'';
+        return '<div>'+
+          '<div class=\'demo-output-card\'>'+this.renderImage(image,'Output '+idx)+'</div>'+
+          '<div class=\'demo-meta\'>'+
+            '<div class=\'demo-model-name\'>'+model+'</div>'+
+            '<button class=\'demo-score-toggle\' type=\'button\'>'+
+              '<span>Score: '+score+'</span>'+
+              '<span class=\'demo-score-icon\'>+</span>'+
+            '</button>'+
+            '<div class=\'demo-score-panel\'><div>'+this.renderDetail(idx,item)+'</div></div>'+
+          '</div>'+
+        '</div>';
+      },
+      renderCase:function(item){
+        return '<div class=\'demo-case\'>'+
+          '<div class=\'demo-layout\'>'+
+            '<div class=\'demo-input-col\'>'+
+              '<div class=\'demo-input-card\'>'+this.renderImage(item.input,'Input Image')+'</div>'+
+              '<div class=\'demo-prompt\'>'+
+                '<div class=\'demo-prompt-title\'>Prompt</div>'+
+                '<div class=\'demo-prompt-text\'>'+(item.prompt||'')+'</div>'+
+              '</div>'+
+            '</div>'+
+            '<div class=\'demo-arrow\'>→</div>'+
+            '<div class=\'demo-output-col\'>'+
+              '<div class=\'demo-output-grid\'>'+
+                this.renderOutput('1',item)+
+                this.renderOutput('2',item)+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
+      },
+      render:function(){
+        const self=this;
+        this.stage.innerHTML=this.cases.map(function(item){return self.renderCase(item);}).join('');
+        this.nav.innerHTML=this.cases.map(function(_,idx){return '<button class=\'demo-dot\' type=\'button\' data-index=\''+idx+'\'></button>';}).join('');
+      },
+      set:function(i){
+        if(!this.cases.length){return;}
+        this.index=(i+this.cases.length)%this.cases.length;
+        const cards=this.stage.querySelectorAll('.demo-case');
+        const dots=this.nav.querySelectorAll('.demo-dot');
+        cards.forEach((card,idx)=>card.classList.toggle('active',idx===this.index));
+        dots.forEach((dot,idx)=>dot.classList.toggle('active',idx===this.index));
+      },
+      next:function(){this.set(this.index+1);},
+      prev:function(){this.set(this.index-1);},
+      start:function(){
+        const self=this;
+        if(!this.cases.length){return;}
+        this.stop();
+        this.timer=setInterval(function(){self.next();},this.autoMs);
+      },
+      stop:function(){
+        if(this.timer){clearInterval(this.timer);this.timer=null;}
+      }
+    };
+    window.StableI2IDemoJSONL=app;
+    setTimeout(function(){app.init();},0);
+  })();" />
