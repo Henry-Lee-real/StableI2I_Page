@@ -42,8 +42,10 @@
   }
 
   .demo-layout {
+    --demo-tile-width: clamp(280px, 22vw, 360px);
+    --demo-tile-gap: 18px;
     display: grid;
-    grid-template-columns: minmax(280px, 340px) 76px 1fr;
+    grid-template-columns: var(--demo-tile-width) 76px calc(var(--demo-tile-width) * 2 + var(--demo-tile-gap));
     gap: 26px;
     align-items: start;
   }
@@ -65,7 +67,7 @@
   }
 
   .demo-input-col {
-    width: min(100%, 340px);
+    width: var(--demo-tile-width);
   }
 
   .demo-input-card,
@@ -137,9 +139,10 @@
   }
 
   .demo-output-grid {
+    width: calc(var(--demo-tile-width) * 2 + var(--demo-tile-gap));
     display: grid;
-    grid-template-columns: repeat(2, minmax(280px, 340px));
-    gap: 18px;
+    grid-template-columns: repeat(2, var(--demo-tile-width));
+    gap: var(--demo-tile-gap);
     justify-content: start;
     align-items: start;
   }
@@ -277,10 +280,11 @@
     }
 
     .demo-input-col {
-      width: 100%;
+      width: min(100%, 360px);
     }
 
     .demo-output-grid {
+      width: 100%;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       justify-content: stretch;
     }
