@@ -284,12 +284,12 @@
   <div class='section-label'>Demo</div>
   <h2 class='section-title'>Interactive comparison demo</h2>
   <p class='lead demo-intro'>
-    Cases are loaded from a JSONL file placed next to this file. Only one case is shown at a time. The carousel can auto-play, and users can also switch manually. Clicking a score expands more detailed analysis.
+    Cases are loaded from a JSON file placed next to this file. Only one case is shown at a time. The carousel can auto-play, and users can also switch manually. Clicking a score expands more detailed analysis.
   </p>
 
   <div class='demo-carousel'>
     <div class='demo-stage' id='stablei2i-demo-stage'>
-      <div class='demo-loading'>Loading demo cases from <code>sections/demo.jsonl</code>...</div>
+      <div class='demo-loading'>Loading demo cases from <code>sections/demo.json</code>...</div>
     </div>
   </div>
 
@@ -310,11 +310,11 @@
   src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
   style='display:none'
   onload="(function(){
-    if(window.StableI2IDemoJSONLInitialized){return;}
+    if(window.StableI2IDemoJSONInitialized{return;}
     window.StableI2IDemoJSONLInitialized=true;
     const app={
       base:'sections/',
-      dataFile:'sections/demo.jsonl',
+      dataFile:'sections/demo.json',
       root:null,
       stage:null,
       nav:null,
@@ -358,8 +358,12 @@
         if(/^(https?:|data:|\/)/.test(path)){return path;}
         return this.base+String(path).replace(/^\.?\//,'');
       },
-      parseJsonl:function(text){
-        return text.split(/\r?\n/).map(function(line){return line.trim();}).filter(Boolean).map(function(line){return JSON.parse(line);});
+      parseJson:function(text){
+        const data=JSON.parse(text);
+        if(!Array.isArray(data)){
+          throw new Error('demo.json must be a JSON array.');
+        }
+        return data;
       },
       load:function(){
         const self=this;
@@ -367,13 +371,13 @@
           if(!res.ok){throw new Error('Failed to load '+self.dataFile);}
           return res.text();
         }).then(function(text){
-          self.cases=self.parseJsonl(text);
-          if(!self.cases.length){throw new Error('No demo cases found in JSONL.');}
+          self.cases=self.parseJson(text);
+          if(!self.cases.length){throw new Error('No demo cases found in JSON.');}
           self.render();
           self.set(0);
           self.start();
         }).catch(function(err){
-          self.stage.innerHTML='<div class=\'demo-error\'>Could not load <code>'+self.dataFile+'</code>. Please make sure the file exists and each line is valid JSON.</div>';
+          self.stage.innerHTML='<div class=\'demo-error\'>Could not load <code>'+self.dataFile+'</code>. Please make sure the file exists and contains a valid JSON array.</div>';
           self.nav.innerHTML='';
           console.error(err);
         });
@@ -455,6 +459,6 @@
         if(this.timer){clearInterval(this.timer);this.timer=null;}
       }
     };
-    window.StableI2IDemoJSONL=app;
+    window.StableI2IDemoJSON=app;
     setTimeout(function(){app.init();},0);
   })();" />
