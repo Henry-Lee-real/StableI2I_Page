@@ -1,20 +1,32 @@
 <div class="section-label">Overall</div>
-<h2 class="section-title">Evaluating fidelity and consistency in image-to-image generation</h2>
+<h2 class="section-title">Why fidelity-oriented I2I evaluation matters</h2>
 
 <p class="lead">
-  Recent image-to-image systems can follow instructions and generate visually appealing results, but they often introduce unintended content drift between the input and output images. Existing evaluations mainly emphasize instruction following, perceptual quality, or aesthetics, while largely overlooking whether the generated image remains faithful to the input in both semantic content and spatial structure. This limitation is especially problematic in real-world I2I applications, where pre–post consistency is critical.
+  Recent image-to-image systems can follow user instructions and generate visually appealing results, but they often introduce unintended content drift between the input and output images. Existing evaluations mainly focus on instruction following, perceptual quality, or aesthetics, while largely overlooking whether the generated result remains faithful to the input image in both semantic content and spatial structure.
 </p>
 
 <p class="lead" style="margin-top: 20px;">
-  StableI2I is proposed as a fidelity-oriented evaluation framework for image editing and image restoration. Instead of relying on rigid mask-based comparison or only high-level semantic judgment, it jointly considers the input image, output image, and processing instruction to assess whether the intended transformation is achieved while non-target content remains stable. By integrating both semantic-level and pixel-level consistency, StableI2I provides more accurate and interpretable evaluation of content fidelity in real-world I2I systems.
+  This limitation is critical in real-world I2I applications. As shown below, conventional metrics may favor outputs that look appealing, yet still miss substantial unintended changes such as structural repainting, object removal, or non-target content drift. StableI2I is proposed to address this gap by explicitly evaluating content fidelity and pre–post consistency in image-to-image transformation.
 </p>
 
-<div class="pipeline">
+<div class="figure" style="margin-top: 28px; padding: 18px;">
+  <img
+    src="assets/overall_necessity.png"
+    alt="Motivation figure for StableI2I"
+    style="width: 100%; height: auto; display: block; border-radius: 18px;"
+  />
+</div>
+
+<p class="lead" style="margin-top: 18px;">
+  StableI2I jointly considers the input image, output image, and editing instruction, and is designed to work across a wide range of I2I tasks, including both image editing and image restoration. Instead of relying only on high-level semantic alignment or rigid mask-based comparison, it evaluates fidelity from complementary perspectives and provides more accurate, fine-grained, and interpretable judgments.
+</p>
+
+<div class="pipeline" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
   <div>
     <div class="stage-num">01</div>
     <div class="stage-name">StableI2I</div>
     <div class="stage-desc">
-      A fidelity-oriented evaluation model for I2I tasks that jointly captures semantic-level and pixel-level consistency across editing and restoration.
+      A fidelity-oriented evaluation model for image-to-image tasks that jointly captures semantic-level and pixel-level consistency.
     </div>
   </div>
 
@@ -22,7 +34,7 @@
     <div class="stage-num">02</div>
     <div class="stage-name">StableI2I-Bench</div>
     <div class="stage-desc">
-      A benchmark designed to evaluate whether modern MLLMs can reason about fidelity and consistency through integrated high-level and low-level visual understanding.
+      A benchmark designed to assess whether modern MLLMs can reason about I2I fidelity through integrated high-level and low-level visual understanding.
     </div>
   </div>
 
@@ -32,18 +44,5 @@
     <div class="stage-desc">
       A multi-stage, multi-task data construction pipeline with error amplification to improve data diversity and strengthen robustness on subtle consistency violations.
     </div>
-  </div>
-</div>
-
-<div class="grid-2" style="margin-top: 34px;">
-  <div>
-    <p class="lead">
-      A central motivation of StableI2I is that valid edits may induce reasonable global changes, such as illumination shifts or secondary effects, which cannot be handled well by rigid mask-based evaluation. At the same time, existing MLLM-based evaluators often miss fine-grained structural and pixel-level inconsistencies. StableI2I addresses both issues by dynamically conditioning evaluation on the instruction and explicitly assessing fidelity across complementary dimensions.
-    </p>
-  </div>
-
-  <div class="figure">
-    Replace this block with your overall framework figure, for example:
-    &lt;img src="assets/overall.png" alt="overall framework" style="width:100%; height:auto; display:block;" /&gt;
   </div>
 </div>
