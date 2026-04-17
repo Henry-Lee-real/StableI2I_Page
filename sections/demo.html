@@ -43,9 +43,9 @@
 
   .demo-layout {
     display: grid;
-    grid-template-columns: minmax(280px, 0.9fr) 76px minmax(520px, 1.25fr);
+    grid-template-columns: minmax(280px, 340px) 76px 1fr;
     gap: 26px;
-    align-items: center;
+    align-items: start;
   }
 
   .demo-arrow {
@@ -62,6 +62,10 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
+  }
+
+  .demo-input-col {
+    width: min(100%, 340px);
   }
 
   .demo-input-card,
@@ -134,8 +138,10 @@
 
   .demo-output-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(280px, 340px));
     gap: 18px;
+    justify-content: start;
+    align-items: start;
   }
 
   .demo-model-name {
@@ -268,6 +274,15 @@
     .demo-layout {
       grid-template-columns: 1fr;
       gap: 18px;
+    }
+
+    .demo-input-col {
+      width: 100%;
+    }
+
+    .demo-output-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      justify-content: stretch;
     }
 
     .demo-arrow {
