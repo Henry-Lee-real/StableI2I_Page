@@ -5,6 +5,10 @@
     gap: 20px;
   }
 
+  .demo-intro {
+    max-width: 980px;
+  }
+
   .demo-loading,
   .demo-error {
     color: rgba(255,255,255,0.56);
@@ -17,13 +21,11 @@
     position: relative;
     overflow: hidden;
     min-height: 700px;
-    transition: height 0.28s ease;
   }
 
   .demo-stage {
     position: relative;
     min-height: 700px;
-    transition: height 0.28s ease;
   }
 
   .demo-case {
@@ -113,7 +115,8 @@
     display: block;
   }
 
-  .demo-prompt-title {
+  .demo-prompt-title,
+  .demo-meta-title {
     font-size: 0.84rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -190,29 +193,11 @@
     color: rgba(255,255,255,0.74);
     line-height: 1.7;
     font-size: 0.93rem;
-    max-height: 260px;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.28) transparent;
   }
 
   .demo-detail-grid strong {
     color: rgba(255,255,255,0.94);
     font-weight: 700;
-  }
-
-  .demo-detail-grid::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .demo-detail-grid::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .demo-detail-grid::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.18);
-    border-radius: 999px;
   }
 
   .demo-controls {
@@ -283,272 +268,195 @@
 
     .demo-carousel,
     .demo-stage {
-      min-height: 1080px;
-    }
-
-    .demo-detail-grid {
-      max-height: 220px;
+      min-height: 1320px;
     }
   }
 
   @media (max-width: 640px) {
     .demo-carousel,
     .demo-stage {
-      min-height: 980px;
-    }
-
-    .demo-detail-grid {
-      max-height: 190px;
+      min-height: 1260px;
     }
   }
 </style>
 
-<div class="demo-wrap" id="stablei2i-demo-root">
-  <div class="demo-carousel">
-    <div class="demo-stage" id="stablei2i-demo-stage">
-      <div class="demo-loading">Loading demo cases from <code>sections/demo.json</code>...</div>
+<div class='demo-wrap' id='stablei2i-demo-root'>
+  <div class='section-label'>Demo</div>
+  <h2 class='section-title'>Interactive comparison demo</h2>
+  <p class='lead demo-intro'>
+    Cases are loaded from a JSON file placed next to this file. Only one case is shown at a time. The carousel can auto-play, and users can also switch manually. Clicking a score expands more detailed analysis.
+  </p>
+
+  <div class='demo-carousel'>
+    <div class='demo-stage' id='stablei2i-demo-stage'>
+      <div class='demo-loading'>Loading demo cases from <code>sections/demo.json</code>...</div>
     </div>
   </div>
 
-  <div class="demo-controls">
-    <div style="display:flex; gap:10px;">
-      <button class="demo-arrow-btn demo-prev" type="button">←</button>
-      <button class="demo-arrow-btn demo-next" type="button">→</button>
+  <div class='demo-controls'>
+    <div style='display:flex; gap:10px;'>
+      <button class='demo-arrow-btn demo-prev' type='button'>←</button>
+      <button class='demo-arrow-btn demo-next' type='button'>→</button>
     </div>
 
-    <div class="demo-nav" id="stablei2i-demo-nav"></div>
+    <div class='demo-nav' id='stablei2i-demo-nav'></div>
 
-    <div class="demo-hint">Auto-play on · hover to pause</div>
+    <div class='demo-hint'>Auto-play on · hover to pause</div>
   </div>
 </div>
 
 <script>
-  (function () {
-    if (window.StableI2IDemoJSONInitialized) return;
-    window.StableI2IDemoJSONInitialized = true;
-
-    const app = {
-      base: 'sections/',
-      dataFile: 'sections/demo.json',
-      root: null,
-      stage: null,
-      nav: null,
-      prevBtn: null,
-      nextBtn: null,
-      timer: null,
-      index: 0,
-      cases: [],
-      autoMs: 4500,
-
-      init() {
-        this.root = document.getElementById('stablei2i-demo-root');
-        if (!this.root) return;
-
-        this.stage = document.getElementById('stablei2i-demo-stage');
-        this.nav = document.getElementById('stablei2i-demo-nav');
-        this.prevBtn = this.root.querySelector('.demo-prev');
-        this.nextBtn = this.root.querySelector('.demo-next');
-
+  (function(){
+    if(window.StableI2IDemoJSONInitialized){return;}
+    window.StableI2IDemoJSONInitialized=true;
+    const app={
+      base:'sections/',
+      dataFile:'sections/demo.json',
+      root:null,
+      stage:null,
+      nav:null,
+      prevBtn:null,
+      nextBtn:null,
+      timer:null,
+      index:0,
+      cases:[],
+      autoMs:4500,
+      init:function(){
+        this.root=document.getElementById('stablei2i-demo-root');
+        if(!this.root){return;}
+        this.stage=document.getElementById('stablei2i-demo-stage');
+        this.nav=document.getElementById('stablei2i-demo-nav');
+        this.prevBtn=this.root.querySelector('.demo-prev');
+        this.nextBtn=this.root.querySelector('.demo-next');
         this.bindBaseEvents();
         this.load();
       },
-
-      bindBaseEvents() {
-        this.prevBtn.addEventListener('click', () => this.prev());
-        this.nextBtn.addEventListener('click', () => this.next());
-
-        this.root.addEventListener('mouseenter', () => this.stop());
-        this.root.addEventListener('mouseleave', () => this.start());
-
-        this.root.addEventListener('click', (e) => {
-          const dot = e.target.closest('.demo-dot');
-          if (dot) {
-            this.set(Number(dot.dataset.index || 0));
-            return;
-          }
-
-          const btn = e.target.closest('.demo-score-toggle');
-          if (btn) {
-            const panel = btn.nextElementSibling;
-            const icon = btn.querySelector('.demo-score-icon');
-            const open = panel.classList.contains('open');
-
-            panel.classList.toggle('open', !open);
-            if (icon) icon.textContent = !open ? '−' : '+';
-
-            setTimeout(() => this.syncHeight(), 290);
+      bindBaseEvents:function(){
+        const self=this;
+        this.prevBtn.addEventListener('click',function(){self.prev();});
+        this.nextBtn.addEventListener('click',function(){self.next();});
+        this.root.addEventListener('mouseenter',function(){self.stop();});
+        this.root.addEventListener('mouseleave',function(){self.start();});
+        this.root.addEventListener('click',function(e){
+          const dot=e.target.closest('.demo-dot');
+          if(dot){self.set(Number(dot.dataset.index||0));return;}
+          const btn=e.target.closest('.demo-score-toggle');
+          if(btn){
+            const panel=btn.nextElementSibling;
+            const icon=btn.querySelector('.demo-score-icon');
+            const open=panel.classList.contains('open');
+            panel.classList.toggle('open',!open);
+            if(icon){icon.textContent=!open?'−':'+';}
           }
         });
       },
-
-      resolve(path) {
-        if (!path) return '';
-        if (/^(https?:|data:|\/)/.test(path)) return path;
-        return this.base + String(path).replace(/^\.?\//, '');
+      resolve:function(path){
+        if(!path){return '';}
+        if(/^(https?:|data:|\/)/.test(path)){return path;}
+        return this.base+String(path).replace(/^\.?\//,'');
       },
-
-      parseJson(text) {
-        const data = JSON.parse(text);
-        if (!Array.isArray(data)) {
+      parseJson:function(text){
+        const data=JSON.parse(text);
+        if(!Array.isArray(data)){
           throw new Error('demo.json must be a JSON array.');
         }
         return data;
       },
-
-      load() {
-        fetch(this.dataFile)
-          .then((res) => {
-            if (!res.ok) throw new Error('Failed to load ' + this.dataFile);
-            return res.text();
-          })
-          .then((text) => {
-            this.cases = this.parseJson(text);
-            if (!this.cases.length) {
-              throw new Error('No demo cases found in JSON.');
-            }
-            this.render();
-            this.set(0);
-            this.syncHeight();
-            this.start();
-          })
-          .catch((err) => {
-            this.stage.innerHTML =
-              '<div class="demo-error">Could not load <code>' +
-              this.dataFile +
-              '</code>. Please make sure the file exists and contains a valid JSON array.</div>';
-            this.nav.innerHTML = '';
-            console.error(err);
-          });
+      load:function(){
+        const self=this;
+        fetch(this.dataFile).then(function(res){
+          if(!res.ok){throw new Error('Failed to load '+self.dataFile);}
+          return res.text();
+        }).then(function(text){
+          self.cases=self.parseJson(text);
+          if(!self.cases.length){throw new Error('No demo cases found in JSON.');}
+          self.render();
+          self.set(0);
+          self.start();
+        }).catch(function(err){
+          self.stage.innerHTML='<div class=\'demo-error\'>Could not load <code>'+self.dataFile+'</code>. Please make sure the file exists and contains a valid JSON array.</div>';
+          self.nav.innerHTML='';
+          console.error(err);
+        });
       },
-
-      renderImage(path, label) {
-        if (path) {
-          return (
-            '<div class="demo-image real"><img src="' +
-            this.resolve(path) +
-            '" alt="' +
-            (label || 'demo image') +
-            '"></div>'
-          );
+      renderImage:function(path,label){
+        if(path){
+          return '<div class=\'demo-image real\'><img src=\''+this.resolve(path)+'\' alt=\''+(label||'demo image')+'\'></div>';
         }
-        return '<div class="demo-image">' + (label || 'Image') + '</div>';
+        return '<div class=\'demo-image\'>'+(label||'Image')+'</div>';
       },
-
-      renderDetail(prefix, item) {
-        return (
-          '<div class="demo-detail-grid">' +
-            '<div><strong>Semantic Level:</strong> ' + (item['semantic' + prefix] || '') + '</div>' +
-            '<div><strong>Structure Level:</strong> ' + (item['structure' + prefix] || '') + '</div>' +
-            '<div><strong>Low-level Appearance:</strong> ' + (item['appearance' + prefix] || '') + '</div>' +
-            '<div><strong>Semantic Level COT:</strong> ' + (item['semantic_cot' + prefix] || '') + '</div>' +
-            '<div><strong>Low-level Appearance COT:</strong> ' + (item['appearance_cot' + prefix] || '') + '</div>' +
-          '</div>'
-        );
+      renderDetail:function(prefix,item){
+        return '<div class=\'demo-detail-grid\'>'+
+          '<div><strong>Semantic Level:</strong> '+(item['semantic'+prefix]||'')+'</div>'+
+          '<div><strong>Structure Level:</strong> '+(item['structure'+prefix]||'')+'</div>'+
+          '<div><strong>Low-level Appearance:</strong> '+(item['appearance'+prefix]||'')+'</div>'+
+          '<div><strong>Semantic Level COT:</strong> '+(item['semantic_cot'+prefix]||'')+'</div>'+
+          '<div><strong>Low-level Appearance COT:</strong> '+(item['appearance_cot'+prefix]||'')+'</div>'+
+        '</div>';
       },
-
-      renderOutput(prefix, item) {
-        const idx = prefix.replace(/[^0-9]/g, '');
-        const model = item['model' + idx] || ('Model ' + idx);
-        const score = item['score' + idx] || '--';
-        const image = item['output' + idx] || '';
-
-        return (
-          '<div>' +
-            '<div class="demo-output-card">' + this.renderImage(image, 'Output ' + idx) + '</div>' +
-            '<div class="demo-meta">' +
-              '<div class="demo-model-name">' + model + '</div>' +
-              '<button class="demo-score-toggle" type="button">' +
-                '<span>Score: ' + score + '</span>' +
-                '<span class="demo-score-icon">+</span>' +
-              '</button>' +
-              '<div class="demo-score-panel"><div>' + this.renderDetail(idx, item) + '</div></div>' +
-            '</div>' +
-          '</div>'
-        );
+      renderOutput:function(prefix,item){
+        const idx=prefix.replace(/[^0-9]/g,'');
+        const model=item['model'+idx]||('Model '+idx);
+        const score=item['score'+idx]||'--';
+        const image=item['output'+idx]||'';
+        return '<div>'+
+          '<div class=\'demo-output-card\'>'+this.renderImage(image,'Output '+idx)+'</div>'+
+          '<div class=\'demo-meta\'>'+
+            '<div class=\'demo-model-name\'>'+model+'</div>'+
+            '<button class=\'demo-score-toggle\' type=\'button\'>'+
+              '<span>Score: '+score+'</span>'+
+              '<span class=\'demo-score-icon\'>+</span>'+
+            '</button>'+
+            '<div class=\'demo-score-panel\'><div>'+this.renderDetail(idx,item)+'</div></div>'+
+          '</div>'+
+        '</div>';
       },
-
-      renderCase(item) {
-        return (
-          '<div class="demo-case">' +
-            '<div class="demo-layout">' +
-              '<div class="demo-input-col">' +
-                '<div class="demo-input-card">' + this.renderImage(item.input, 'Input Image') + '</div>' +
-                '<div class="demo-prompt">' +
-                  '<div class="demo-prompt-title">Prompt</div>' +
-                  '<div class="demo-prompt-text">' + (item.prompt || '') + '</div>' +
-                '</div>' +
-              '</div>' +
-              '<div class="demo-arrow">→</div>' +
-              '<div class="demo-output-col">' +
-                '<div class="demo-output-grid">' +
-                  this.renderOutput('1', item) +
-                  this.renderOutput('2', item) +
-                '</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>'
-        );
+      renderCase:function(item){
+        return '<div class=\'demo-case\'>'+
+          '<div class=\'demo-layout\'>'+
+            '<div class=\'demo-input-col\'>'+
+              '<div class=\'demo-input-card\'>'+this.renderImage(item.input,'Input Image')+'</div>'+
+              '<div class=\'demo-prompt\'>'+
+                '<div class=\'demo-prompt-title\'>Prompt</div>'+
+                '<div class=\'demo-prompt-text\'>'+(item.prompt||'')+'</div>'+
+              '</div>'+
+            '</div>'+
+            '<div class=\'demo-arrow\'>→</div>'+
+            '<div class=\'demo-output-col\'>'+
+              '<div class=\'demo-output-grid\'>'+
+                this.renderOutput('1',item)+
+                this.renderOutput('2',item)+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
       },
-
-      render() {
-        this.stage.innerHTML = this.cases.map((item) => this.renderCase(item)).join('');
-        this.nav.innerHTML = this.cases
-          .map((_, idx) => '<button class="demo-dot" type="button" data-index="' + idx + '"></button>')
-          .join('');
+      render:function(){
+        const self=this;
+        this.stage.innerHTML=this.cases.map(function(item){return self.renderCase(item);}).join('');
+        this.nav.innerHTML=this.cases.map(function(_,idx){return '<button class=\'demo-dot\' type=\'button\' data-index=\''+idx+'\'></button>';}).join('');
       },
-
-      set(i) {
-        if (!this.cases.length) return;
-
-        this.index = (i + this.cases.length) % this.cases.length;
-        const cards = this.stage.querySelectorAll('.demo-case');
-        const dots = this.nav.querySelectorAll('.demo-dot');
-
-        cards.forEach((card, idx) => card.classList.toggle('active', idx === this.index));
-        dots.forEach((dot, idx) => dot.classList.toggle('active', idx === this.index));
-
-        this.syncHeight();
+      set:function(i){
+        if(!this.cases.length){return;}
+        this.index=(i+this.cases.length)%this.cases.length;
+        const cards=this.stage.querySelectorAll('.demo-case');
+        const dots=this.nav.querySelectorAll('.demo-dot');
+        cards.forEach((card,idx)=>card.classList.toggle('active',idx===this.index));
+        dots.forEach((dot,idx)=>dot.classList.toggle('active',idx===this.index));
       },
-
-      syncHeight() {
-        const active = this.stage.querySelector('.demo-case.active');
-        const carousel = this.root.querySelector('.demo-carousel');
-        if (!active || !carousel) return;
-
-        const h = active.offsetHeight;
-        this.stage.style.height = h + 'px';
-        carousel.style.height = h + 'px';
-      },
-
-      next() {
-        this.set(this.index + 1);
-      },
-
-      prev() {
-        this.set(this.index - 1);
-      },
-
-      start() {
-        if (!this.cases.length) return;
+      next:function(){this.set(this.index+1);},
+      prev:function(){this.set(this.index-1);},
+      start:function(){
+        const self=this;
+        if(!this.cases.length){return;}
         this.stop();
-        this.timer = setInterval(() => this.next(), this.autoMs);
+        this.timer=setInterval(function(){self.next();},this.autoMs);
       },
-
-      stop() {
-        if (this.timer) {
-          clearInterval(this.timer);
-          this.timer = null;
-        }
+      stop:function(){
+        if(this.timer){clearInterval(this.timer);this.timer=null;}
       }
     };
-
-    window.StableI2IDemoJSON = app;
-    window.addEventListener('resize', () => {
-      if (window.StableI2IDemoJSON) {
-        window.StableI2IDemoJSON.syncHeight();
-      }
-    });
-
+    window.StableI2IDemoJSON=app;
     app.init();
   })();
 </script>
