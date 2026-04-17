@@ -58,8 +58,8 @@
     color: rgba(255,255,255,0.75);
     user-select: none;
     align-self: start;
-    margin-top: calc(var(--demo-tile-width) / 2);
-    transform: translateY(-50%);
+    margin-top: calc(var(--demo-tile-width) * 0.58);
+    transform: none;
   }
 
   .demo-input-col,
@@ -90,6 +90,7 @@
   .demo-prompt,
   .demo-meta {
     padding: 16px 18px;
+    margin-top: 2px;
   }
 
   .demo-image {
@@ -148,6 +149,12 @@
     gap: var(--demo-tile-gap);
     justify-content: start;
     align-items: start;
+  }
+
+  .demo-output-item {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
   .demo-model-name {
@@ -477,7 +484,7 @@
         const image = item['output' + idx] || '';
 
         return (
-          '<div>' +
+          '<div class="demo-output-item">' +
             '<div class="demo-output-card">' + this.renderImage(image, 'Output ' + idx) + '</div>' +
             '<div class="demo-meta">' +
               '<div class="demo-model-name">' + model + '</div>' +
