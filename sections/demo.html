@@ -305,11 +305,8 @@
   </div>
 </div>
 
-<img
-  alt=''
-  src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
-  style='display:none'
-  onload="(function(){
+<script>
+  (function(){
     if(window.StableI2IDemoJSONInitialized){return;}
     window.StableI2IDemoJSONInitialized=true;
     const app={
@@ -460,5 +457,6 @@
       }
     };
     window.StableI2IDemoJSON=app;
-    setTimeout(function(){app.init();},0);
-  })();" />
+    app.init();
+  })();
+</script>
