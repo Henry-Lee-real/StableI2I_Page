@@ -1,7 +1,7 @@
 <h2 class="section-title">Method</h2>
 
 <p class="lead">
-  StableI2I is a fidelity-oriented evaluation framework for image-to-image tasks that jointly considers the input image, output image, and editing instruction. Instead of focusing only on instruction following or perceptual quality, it explicitly evaluates whether the generated result preserves pre–post consistency in both semantic content and spatial structure. To make the evaluation adaptive across different I2I settings, StableI2I dynamically conditions its analysis on the task instruction and the visual relationship between the input and output.
+  Our model is mainly trained on the following four types of data to enhance its perception capability and task accuracy.
 </p>
 
 <div style="margin-top: 28px;">
@@ -15,7 +15,7 @@
 </div>
 
 <p class="lead" style="margin-top: 24px;">
-  Concretely, StableI2I evaluates fidelity from three complementary perspectives: <strong>Semantic Level</strong>, which measures whether the intended transformation is correctly reflected; <strong>Structure Level</strong>, which checks whether geometry and spatial layout remain stable in non-target regions; and <strong>Low-level Appearance</strong>, which focuses on texture, blur, noise, and other fine-grained perceptual changes. By combining these dimensions, StableI2I produces fine-grained and interpretable judgments for both image editing and image restoration scenarios.
+  Due to insufficient data volume, our training process mainly adopts a multi-stage data augmentation approach for model training.
 </p>
 
 <div style="margin-top: 28px;">
