@@ -1,25 +1,29 @@
-<div class="section-label">Method</div>
-<h2 class="section-title">Method details</h2>
+<h2 class="section-title">Method</h2>
+
 <p class="lead">
-  Put the technical core of StableI2I here. This section is suitable for the main method figure, the three fidelity dimensions, the scoring process, and any model or data design choices that you want readers to understand quickly.
+  StableI2I is a fidelity-oriented evaluation framework for image-to-image tasks that jointly considers the input image, output image, and editing instruction. Instead of focusing only on instruction following or perceptual quality, it explicitly evaluates whether the generated result preserves pre–post consistency in both semantic content and spatial structure. To make the evaluation adaptive across different I2I settings, StableI2I dynamically conditions its analysis on the task instruction and the visual relationship between the input and output.
 </p>
 
-<div class="grid-2">
-  <div>
-    <p class="lead">
-      Suggested structure:
-      <br><br>
-      • Semantic fidelity: whether the intended edit is correctly reflected
-      <br>
-      • Structure fidelity: whether geometry or layout drifts in non-target regions
-      <br>
-      • Appearance fidelity: whether texture, blur, or noise changes unintentionally
-      <br><br>
-      You can also place a short equation block or a compact algorithm summary here.
-    </p>
+<div style="margin-top: 28px;">
+  <div style="width: min(100%, 900px);">
+    <img
+      src="assets/method1.png"
+      alt="StableI2I method overview"
+      style="width: 100%; height: auto; display: block; border-radius: 18px;"
+    />
   </div>
-  <div class="figure">
-    Replace this block with your method figure, for example:
-    &lt;img src="assets/method.png" alt="method figure" style="width:100%; height:auto; display:block;" /&gt;
+</div>
+
+<p class="lead" style="margin-top: 24px;">
+  Concretely, StableI2I evaluates fidelity from three complementary perspectives: <strong>Semantic Level</strong>, which measures whether the intended transformation is correctly reflected; <strong>Structure Level</strong>, which checks whether geometry and spatial layout remain stable in non-target regions; and <strong>Low-level Appearance</strong>, which focuses on texture, blur, noise, and other fine-grained perceptual changes. By combining these dimensions, StableI2I produces fine-grained and interpretable judgments for both image editing and image restoration scenarios.
+</p>
+
+<div style="margin-top: 28px;">
+  <div style="width: min(100%, 900px);">
+    <img
+      src="assets/method2.png"
+      alt="StableI2I evaluation dimensions"
+      style="width: 100%; height: auto; display: block; border-radius: 18px;"
+    />
   </div>
 </div>
