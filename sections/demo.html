@@ -3,6 +3,8 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    max-width: 1320px;
+    margin: 0 auto;
   }
 
   .demo-loading,
@@ -42,12 +44,13 @@
   }
 
   .demo-layout {
-    --demo-tile-width: clamp(280px, 22vw, 360px);
+    --demo-tile-width: minmax(0, 1fr);
     --demo-tile-gap: 18px;
     display: grid;
-    grid-template-columns: var(--demo-tile-width) 76px calc(var(--demo-tile-width) * 2 + var(--demo-tile-gap));
+    grid-template-columns: minmax(260px, 0.95fr) 76px minmax(0, 2fr);
     gap: 26px;
     align-items: start;
+    width: 100%;
   }
 
   .demo-arrow {
@@ -58,7 +61,7 @@
     color: #98a1af;
     user-select: none;
     align-self: start;
-    margin-top: calc(var(--demo-tile-width) * 0.58);
+    margin-top: clamp(120px, 14vw, 190px);
     transform: none;
   }
 
@@ -70,7 +73,8 @@
   }
 
   .demo-input-col {
-    width: var(--demo-tile-width);
+    width: 100%;
+    max-width: 360px;
   }
 
   .demo-input-card,
@@ -144,11 +148,11 @@
   }
 
   .demo-output-grid {
-    width: calc(var(--demo-tile-width) * 2 + var(--demo-tile-gap));
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(2, var(--demo-tile-width));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--demo-tile-gap);
-    justify-content: start;
+    justify-content: stretch;
     align-items: start;
   }
 
@@ -243,6 +247,7 @@
     justify-content: space-between;
     gap: 16px;
     margin-top: 22px;
+    width: 100%;
   }
 
   .demo-nav {
@@ -294,6 +299,7 @@
 
     .demo-input-col {
       width: min(100%, 360px);
+      margin: 0 auto;
     }
 
     .demo-output-grid {
